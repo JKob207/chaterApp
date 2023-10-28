@@ -10,14 +10,17 @@ export const addUser = async (newUser: User) => {
     }
 }
 
-export const listAllUsers = async () => {
+export const listAllUsers = async (): Promise<User[]> => {
+    let result: User[];
     try {
         const response = await axios.get("http://127.0.0.1:3001/getAllUsers");
         const data = response.data;
-        return data;
+        result = data;
     } catch (error) {
         console.log(error);
+        result = [];
     }
+    return result;
 }
 
 export const updateUser = async (userId: string, userData: User) => {
