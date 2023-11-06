@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "../../components/Button/Button";
+import { Link } from "react-router-dom";
 
 export default function Login()
 {
@@ -97,7 +98,7 @@ export default function Login()
                                 <Button type="primary" click={handleSubmit}>Sign In</Button>
                             </div>
                         </form>
-                        <p className="font-semibold">Don't have an account? <span className="text-green-700">Sign up here</span></p>
+                        <p className="font-semibold">Don't have an account? <Link to="register" className="text-green-700">Sign up here</Link></p>
                     </main>
                 </div>
                 <div className="left w-1/2 bg-stone-500 h-screen"></div>
