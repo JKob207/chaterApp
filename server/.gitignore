@@ -57,3 +57,4 @@ web_modules/
 #.env and others
 credentials.txt
 .env
+id_rsa_priv.pem
