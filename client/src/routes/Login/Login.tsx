@@ -1,10 +1,14 @@
 import { useState } from "react";
 import Button from "../../components/Button/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { UserLoginData } from "../../types";
+import { login } from "../../services/auth";
+import { getUserByEmail } from "../../services/usersAPI";
 
 export default function Login()
 {
     const [hiddenPassword, setHiddenPassword] = useState(true);
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -29,6 +33,22 @@ export default function Login()
         console.log(formData);
         
         // send data to check auth and login
+        const userLoginData: UserLoginData = {
+            email: formData.email,
+            password: formData.password
+        };
+
+        try {
+            const response = await login(userLoginData);
+            if(response)
+            {
+                const userData = await getUserByEmail(userLoginData.email);
+                console.log(userData);
+                navigate('/protected', {state: {user: userData}});
+            }
+        } catch (error) {
+            console.log(error);
+        }
         
         setFormData({
             email: "",

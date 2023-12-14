@@ -3,8 +3,17 @@ import axios from "axios"
 
 export const addUser = async (newUser: User) => {
     try {
-        await axios.post("http://127.0.0.1:3001/addUser", newUser);
+        await axios.post("http://127.0.0.1:3001/users/addUser", newUser);
         console.log("New user added to db!");
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getUserByEmail = async (email: string) => {
+    try {
+        const response = await axios.get(`http://127.0.0.1:3001/users/getUserByEmail/${email}`, );
+        return response.data;
     } catch (error) {
         console.log(error);
     }
@@ -13,7 +22,7 @@ export const addUser = async (newUser: User) => {
 export const listAllUsers = async (): Promise<User[]> => {
     let result: User[];
     try {
-        const response = await axios.get("http://127.0.0.1:3001/getAllUsers");
+        const response = await axios.get("http://127.0.0.1:3001/users/getAllUsers");
         const data = response.data;
         result = data;
     } catch (error) {
@@ -25,7 +34,7 @@ export const listAllUsers = async (): Promise<User[]> => {
 
 export const updateUser = async (userId: string, userData: User) => {
     try {
-        await axios.put("http://127.0.0.1:3001/updateUser", {
+        await axios.put("http://127.0.0.1:3001/users/updateUser", {
             id: userId,
             newUserData: userData
         });
@@ -37,7 +46,7 @@ export const updateUser = async (userId: string, userData: User) => {
 
 export const deleteUser = async (userId: string) => {
     try {
-        await axios.delete(`http://127.0.0.1:3001/deleteUser/${userId}`);
+        await axios.delete(`http://127.0.0.1:3001/users/deleteUser/${userId}`);
         console.log("User deleted!");
     } catch (error) {
         console.log(error);

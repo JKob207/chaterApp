@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import "./Register.css";
+import { User } from '../../types';
+import { register } from '../../services/auth';
 
 export default function Register()
 {
@@ -42,6 +44,17 @@ export default function Register()
         console.log(formData);
         
         // send data to check and register
+        const newUser: User = {
+            email: formData.email,
+            login: formData.login,
+            password: formData.password
+        };
+
+        try {
+            await register(newUser);
+        } catch (error) {
+            console.log(error);
+        }
         
         setFormData({
             email: "",

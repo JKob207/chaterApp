@@ -11,6 +11,16 @@ router.post('/addUser', async (req, res) => {
     }
 });
 
+router.get('/getUserByEmail/:email', async (req, res) => {
+    try {
+        const email = req.params.email;
+        const result = await UserModel.findOne({email: email}).exec();
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 router.get('/getAllUsers', async (req, res) => {
     try {
         const result = await UserModel.find({}).exec();

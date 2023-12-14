@@ -12,6 +12,11 @@ export type UserFormErrors = {
     repeatPasswordError: string;
 }
 
+export type UserLoginData = {
+    email: string;
+    password: string;
+}
+
 export type User = {
     email: string;
     login: string;
