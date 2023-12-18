@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import "./Register.css";
-import { User } from '../../types';
+import { User, UserRegisterData } from '../../types';
 import { register } from '../../services/auth';
+import { z, ZodType } from 'zod';
 
 export default function Register()
 {
@@ -17,7 +18,26 @@ export default function Register()
         login: "",
         password: "",
         confirmPassword: ""
+    });
+
+    const [formDataErrors, setFormDataErrors] = useState<{
+        email?: string[] | undefined;
+        login?: string[] | undefined;
+        password?: string[] | undefined;
+        confirmPassword?: string[] | undefined;
+    }>({});
+
+    const registerDataSchema: ZodType<UserRegisterData> = z
+    .object({
+        email: z.string().email(),
+        login: z.string().min(5).max(20),
+        password: z.string().min(6).max(20),
+        confirmPassword: z.string().min(6).max(20)
     })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"]
+    });
 
     function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
         const { name, value } = event.target;
@@ -42,6 +62,14 @@ export default function Register()
     async function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.preventDefault();
         console.log(formData);
+
+        const validationResult = await registerDataSchema.safeParseAsync(formData);
+        if(!validationResult.success)
+        {
+            const errors = validationResult.error.flatten();
+            setFormDataErrors(errors.fieldErrors);
+            return;
+        }
         
         // send data to check and register
         const newUser: User = {
@@ -50,11 +78,13 @@ export default function Register()
             password: formData.password
         };
 
+        /*
         try {
             await register(newUser);
         } catch (error) {
             console.log(error);
         }
+        */
         
         setFormData({
             email: "",
@@ -62,6 +92,7 @@ export default function Register()
             password: "",
             confirmPassword: ""
         });
+        setFormDataErrors({});
     }
 
     return (
@@ -93,6 +124,7 @@ export default function Register()
                                                 value={formData.email}
                                             />
                                         </label>
+                                        {formDataErrors.email && <span>{formDataErrors.email}</span>}
                                     </div>
                                 </div>
                             </div>
@@ -111,6 +143,7 @@ export default function Register()
                                                 value={formData.login}
                                             />
                                         </label>
+                                        {formDataErrors.login && <span>{formDataErrors.login}</span>}
                                     </div>
                                 </div>
                             </div>
@@ -137,6 +170,7 @@ export default function Register()
                                                 <img className="cursor-pointer w-5 h-5 absolute top-1/2 transform -translate-y-1/2 right-1" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAABNUlEQVR4nO2VTUoDQRCFv+QARtcSdW1wm70Yg4leQIKLCGLwKP6M19B4DJExXkNdqRjNRlAcaShhaKp6Oj/LPKhFN++9bqqrqmGOGaEMrAF1iVXZmwolYBu4Ad6AzItXoA80hDsWNoB7xdSKO6AWa34AfI1hnkk4TafI/AT4NQxSIJFIDY7THlvmO8CPInoHWgq/DQwV/jfQ9MmLwLNxqxZwKG/S9XS7huYJqOSJSSAtDh+ydjf2MTC0Z/+EJWBkkM6F05f1tXLAhaH9FO+oA8rAstFcSdEBoVukimFsik7zpErgkdsB8z1D8wgs+OSmlJhPHkq1aOZWmboRo6IXaLSB5PsSeAg02lFRTjtTjIp9IlGTAZZFxi2wzgTYktp/UUzd3hWwyQxQAlZyH051kj9gDjT8AX3d0XouOd9MAAAAAElFTkSuQmCC" alt="open eye" onClick={() => toggleHiddenPassword("normal")} />
                                             }
                                         </label>
+                                        {formDataErrors.password && <span>{formDataErrors.password}</span>}
                                     </div>
                                 </div>
                             </div>
@@ -163,6 +197,7 @@ export default function Register()
                                                 <img className="cursor-pointer w-5 h-5 absolute top-1/2 transform -translate-y-1/2 right-1" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAABNUlEQVR4nO2VTUoDQRCFv+QARtcSdW1wm70Yg4leQIKLCGLwKP6M19B4DJExXkNdqRjNRlAcaShhaKp6Oj/LPKhFN++9bqqrqmGOGaEMrAF1iVXZmwolYBu4Ad6AzItXoA80hDsWNoB7xdSKO6AWa34AfI1hnkk4TafI/AT4NQxSIJFIDY7THlvmO8CPInoHWgq/DQwV/jfQ9MmLwLNxqxZwKG/S9XS7huYJqOSJSSAtDh+ydjf2MTC0Z/+EJWBkkM6F05f1tXLAhaH9FO+oA8rAstFcSdEBoVukimFsik7zpErgkdsB8z1D8wgs+OSmlJhPHkq1aOZWmboRo6IXaLSB5PsSeAg02lFRTjtTjIp9IlGTAZZFxi2wzgTYktp/UUzd3hWwyQxQAlZyH051kj9gDjT8AX3d0XouOd9MAAAAAElFTkSuQmCC" alt="open eye" onClick={() => toggleHiddenPassword("confirm")} />
                                             }
                                         </label>
+                                        {formDataErrors.confirmPassword && <span>{formDataErrors.confirmPassword}</span>}
                                     </div>
                                 </div>
                             </div>

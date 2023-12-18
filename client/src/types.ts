@@ -1,15 +1,8 @@
-export type UserFormData = {
+export type UserRegisterData = {
     email: string;
     login: string;
     password: string;
-    repeatPassword: string;
-}
-
-export type UserFormErrors = {
-    emailError: string;
-    loginError: string;
-    passwordError: string;
-    repeatPasswordError: string;
+    confirmPassword: string;
 }
 
 export type UserLoginData = {

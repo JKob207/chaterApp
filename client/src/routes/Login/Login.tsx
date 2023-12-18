@@ -4,16 +4,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserLoginData } from "../../types";
 import { login } from "../../services/auth";
 import { getUserByEmail } from "../../services/usersAPI";
+import { ZodType, z } from "zod";
 
 export default function Login()
 {
     const [hiddenPassword, setHiddenPassword] = useState(true);
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
+    const loginDataSchema: ZodType<UserLoginData> = z
+    .object({
+        email: z.string().email(),
+        password: z.string().min(6).max(20)
+    })
+
+    const [formData, setFormData] = useState<UserLoginData>({
         email: "",
         password: ""
-    })
+    });
+
+    const [formDataErrors, setFormDataErrors] = useState<{ email?: string[] | undefined; password?: string[] | undefined; }>({});
 
     function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
         const { name, value } = event.target;
@@ -31,6 +40,14 @@ export default function Login()
     async function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.preventDefault();
         console.log(formData);
+
+        const validationResult = await loginDataSchema.safeParseAsync(formData);
+        if(!validationResult.success)
+        {
+            const errors = validationResult.error.flatten();
+            setFormDataErrors(errors.fieldErrors);
+            return;
+        }
         
         // send data to check auth and login
         const userLoginData: UserLoginData = {
@@ -54,6 +71,7 @@ export default function Login()
             email: "",
             password: ""
         });
+        setFormDataErrors({});
     }
 
     return (
@@ -85,6 +103,7 @@ export default function Login()
                                                 value={formData.email}
                                             />
                                         </label>
+                                        {formDataErrors.email && <span>{formDataErrors.email}</span>}
                                     </div>
                                 </div>
                             </div>
@@ -111,6 +130,7 @@ export default function Login()
                                                 <img className="cursor-pointer w-5 h-5 absolute top-1/2 transform -translate-y-1/2 right-1" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAABNUlEQVR4nO2VTUoDQRCFv+QARtcSdW1wm70Yg4leQIKLCGLwKP6M19B4DJExXkNdqRjNRlAcaShhaKp6Oj/LPKhFN++9bqqrqmGOGaEMrAF1iVXZmwolYBu4Ad6AzItXoA80hDsWNoB7xdSKO6AWa34AfI1hnkk4TafI/AT4NQxSIJFIDY7THlvmO8CPInoHWgq/DQwV/jfQ9MmLwLNxqxZwKG/S9XS7huYJqOSJSSAtDh+ydjf2MTC0Z/+EJWBkkM6F05f1tXLAhaH9FO+oA8rAstFcSdEBoVukimFsik7zpErgkdsB8z1D8wgs+OSmlJhPHkq1aOZWmboRo6IXaLSB5PsSeAg02lFRTjtTjIp9IlGTAZZFxi2wzgTYktp/UUzd3hWwyQxQAlZyH051kj9gDjT8AX3d0XouOd9MAAAAAElFTkSuQmCC" alt="open eye" onClick={toggleHiddenPassword} />
                                             }
                                         </label>
+                                        {formDataErrors.password && <span>{formDataErrors.password}</span>}
                                     </div>
                                 </div>
                             </div>

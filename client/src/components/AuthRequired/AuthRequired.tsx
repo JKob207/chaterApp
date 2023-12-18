@@ -15,7 +15,6 @@ export default function AuthRequired()
 
         const AuthObserver = async () => {
             try {
-                console.log(location);
                 if(!location.state.user && !userContextData)
                 {
                     throw new Error("No user provided!");
@@ -24,7 +23,6 @@ export default function AuthRequired()
                 if(!result) throw new Error("No authorization!");
                 else {
                     const userData = location.state.user ? location.state.user : userContextData;
-                    console.log(userData);
                     setAction(
                         <userContext.Provider value={userData}>
                             <Outlet />
