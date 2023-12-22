@@ -11,7 +11,9 @@ export type UserLoginData = {
 }
 
 export type User = {
+    _id?: string;
     email: string;
     login: string;
     password: string;
+    avatar: string;
 }

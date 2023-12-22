@@ -17,7 +17,8 @@ export default function Register()
         email: "",
         login: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        avatar: ""
     });
 
     const [formDataErrors, setFormDataErrors] = useState<{
@@ -59,6 +60,36 @@ export default function Register()
         }));
     }
 
+    function convertToBase64(file: File): Promise<string | ArrayBuffer | null>
+    {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+            fileReader.onerror = (err) => {
+                reject(err);
+            }
+        });
+    }
+
+    async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+        try {
+            if(event.target.files === null) throw new Error("No file!");
+            const file = event.target.files[0];
+            const base64File = await convertToBase64(file);
+            if(typeof base64File !== "string") throw new Error("Wrong base64 file data type!");
+            setFormData(prev => ({
+                ...prev,
+                avatar: base64File
+            }))
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
     async function handleSubmit(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.preventDefault();
         console.log(formData);
@@ -70,27 +101,35 @@ export default function Register()
             setFormDataErrors(errors.fieldErrors);
             return;
         }
+
+        if(!formData.avatar)
+        {
+            setFormData(prev => ({
+                ...prev,
+                avatar: "data:image/jpeg;base64,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"
+            }));
+        }
         
         // send data to check and register
         const newUser: User = {
             email: formData.email,
             login: formData.login,
-            password: formData.password
+            password: formData.password,
+            avatar: formData.avatar
         };
 
-        /*
         try {
             await register(newUser);
         } catch (error) {
             console.log(error);
         }
-        */
         
         setFormData({
             email: "",
             login: "",
             password: "",
-            confirmPassword: ""
+            confirmPassword: "",
+            avatar: ""
         });
         setFormDataErrors({});
     }
@@ -208,6 +247,8 @@ export default function Register()
                                     type="file"
                                     className="block w-full rounded-md border-0 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                                     name="avatar"
+                                    accept='.jpeg, .png, .jpg'
+                                    onChange={handleFileUpload}
                                 />
                             </div>
                             <div className="flex flex-row justify-center">

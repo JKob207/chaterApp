@@ -4,6 +4,7 @@ import Login from './routes/Login/Login';
 import Register from './routes/Register/Register';
 import AuthRequired from './components/AuthRequired/AuthRequired';
 import Protected from './routes/Protected/Protected';
+import Layout from './components/Layout/Layout';
 
 export default function App() {
   const router = createBrowserRouter(createRoutesFromElements(
@@ -11,7 +12,7 @@ export default function App() {
       <Route index element={<Login />} />
       <Route path='register' element={<Register />} />
       <Route element={<AuthRequired />}>
-        <Route path='protected' element={<Protected />} />
+        <Route path='main' element={<Layout />} />
       </Route>
     </Route>
   ));

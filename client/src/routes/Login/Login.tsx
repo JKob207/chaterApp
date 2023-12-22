@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "../../components/Button/Button";
 import { Link, useNavigate } from "react-router-dom";
-import { UserLoginData } from "../../types";
+import { User, UserLoginData } from "../../types";
 import { login } from "../../services/auth";
 import { getUserByEmail } from "../../services/usersAPI";
 import { ZodType, z } from "zod";
@@ -59,9 +59,14 @@ export default function Login()
             const response = await login(userLoginData);
             if(response)
             {
-                const userData = await getUserByEmail(userLoginData.email);
-                console.log(userData);
-                navigate('/protected', {state: {user: userData}});
+                const response: User | null = await getUserByEmail(userLoginData.email);
+                if(response)
+                {
+                    const userData = response;
+                    console.log("User data:");
+                    console.log(userData);
+                    navigate('/main', {state: {user: userData}});
+                }
             }
         } catch (error) {
             console.log(error);

@@ -36,11 +36,14 @@ router.post('/register', function(req, res, next) {
     const salt = saltHash.salt;
     const hash = saltHash.hash;
 
+    const avatar = req.body.avatar;
+
     const newUser = new User({
         email: req.body.email,
         login: req.body.login,
         hash: hash,
-        salt: salt
+        salt: salt,
+        avatar: avatar
     });
 
     newUser.save()

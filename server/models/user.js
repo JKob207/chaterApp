@@ -16,6 +16,10 @@ const UserSchema = new mongoose.Schema({
     salt: {
         type: String,
         required: true
+    },
+    avatar: {
+        type: String,
+        required: true
     }
 });
 

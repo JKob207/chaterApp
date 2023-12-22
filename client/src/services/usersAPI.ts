@@ -10,12 +10,13 @@ export const addUser = async (newUser: User) => {
     }
 }
 
-export const getUserByEmail = async (email: string) => {
+export const getUserByEmail = async (email: string): Promise<User | null> => {
     try {
         const response = await axios.get(`http://127.0.0.1:3001/users/getUserByEmail/${email}`, );
         return response.data;
     } catch (error) {
         console.log(error);
+        return null;
     }
 }
 
