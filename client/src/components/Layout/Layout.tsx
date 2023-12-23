@@ -9,7 +9,7 @@ export default function Layout()
     
     return (
         <div className="flex flex-row h-screen">
-            <aside className="basis-1/6 bg-red-100 border-r-2 border-gray-100">
+            <aside className="basis-1/6 border-r-2 border-gray-100">
                 <div className="logo-container py-5 flex justify-center border-b-2 border-gray-100">
                     <img src="https://placehold.co/50" className="rounded-full" alt="logo" />
                 </div>
@@ -34,8 +34,9 @@ export default function Layout()
                     </div>
                 </div>
             </aside>
-            <main className="main-container basis-5/6 bg-green-100">
+            <main className="main-container basis-5/6">
                 {user && <Header user={user} />}
+                <Outlet />
             </main>
         </div>
     )

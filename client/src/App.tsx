@@ -3,8 +3,8 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import Login from './routes/Login/Login';
 import Register from './routes/Register/Register';
 import AuthRequired from './components/AuthRequired/AuthRequired';
-import Protected from './routes/Protected/Protected';
 import Layout from './components/Layout/Layout';
+import ChatDashboard from './routes/ChatDashboard/ChatDashboard';
 
 export default function App() {
   const router = createBrowserRouter(createRoutesFromElements(
@@ -12,7 +12,9 @@ export default function App() {
       <Route index element={<Login />} />
       <Route path='register' element={<Register />} />
       <Route element={<AuthRequired />}>
-        <Route path='main' element={<Layout />} />
+        <Route path='main' element={<Layout />}>
+          <Route index element={<ChatDashboard />} />
+        </Route>
       </Route>
     </Route>
   ));
