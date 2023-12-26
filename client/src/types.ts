@@ -17,3 +17,16 @@ export type User = {
     password: string;
     avatar: string;
 }
+
+export type ConversationType = {
+    _id?: string;
+    members: string[];
+}
+
+export type MessagesType = {
+    _id?: string;
+    conversationId: string;
+    sender: string;
+    text: string;
+    createdAt?: Date;
+}

@@ -21,6 +21,16 @@ router.get('/getUserByEmail/:email', async (req, res) => {
     }
 });
 
+router.get('/getUserById/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await UserModel.findOne({_id: id}).exec();
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 router.get('/getAllUsers', async (req, res) => {
     try {
         const result = await UserModel.find({}).exec();

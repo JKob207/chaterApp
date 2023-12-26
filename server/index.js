@@ -3,6 +3,11 @@ const cors = require('cors');
 const path = require('path');
 const passport = require('passport');
 const bodyParser = require('body-parser');
+
+const userModel = require('./models/user');
+const conversationModel = require('./models/conversation');
+const messageModel = require('./models/message');
+
 const routes = require('./routes');
 
 const app = express();
@@ -13,7 +18,6 @@ const dotenv = require('dotenv').config();
 app.use(cors());
 
 const connectDB = require('./config/database');
-const userModel = require('./models/user');
 
 require('./config/passport')(passport);
 

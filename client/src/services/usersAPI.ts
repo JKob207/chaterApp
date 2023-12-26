@@ -20,6 +20,16 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
     }
 }
 
+export const getUserById = async (id: string): Promise<User | null> => {
+    try {
+        const response = await axios.get(`http://127.0.0.1:3001/users/getUserById/${id}`, );
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 export const listAllUsers = async (): Promise<User[]> => {
     let result: User[];
     try {
