@@ -1,61 +1,90 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv').config();
 const cors = require('cors');
+const path = require('path');
+const passport = require('passport');
+const bodyParser = require('body-parser');
+const socket = require('socket.io');
+
+const userModel = require('./models/user');
+const conversationModel = require('./models/conversation');
+const messageModel = require('./models/message');
+
+const routes = require('./routes');
+
 const app = express();
 
-const UserModel = require('./models/user');
-
 const PORT = 3001;
-const URI = `mongodb+srv://aikidox:${process.env.MONGO_PASSWORD}@chater.zlvczl6.mongodb.net/chater`;
 
-app.use(express.json());
+const dotenv = require('dotenv').config();
 app.use(cors());
 
-mongoose.connect(URI, {
-    useNewUrlParser: true
-});
+const connectDB = require('./config/database');
 
-app.post('/addUser', async (req, res) => {
-    const user = new UserModel(req.body);
+require('./config/passport')(passport);
 
-    try {
-        await user.save();
-        res.send("Inserted data!");
-    } catch (error) {
-        console.log(error);
-    }
-});
+app.use(passport.initialize());
 
-app.get('/getAllUsers', async (req, res) => {
-    try {
-        const result = await UserModel.find({}).exec();
-        res.send(result);
-    } catch (error) {
-        console.log(error);
-    }
-});
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
-app.put('/updateUser', async (req, res) => {
-    try {
-        const { id, newUserData } = req.body;
-        const result = await UserModel.findByIdAndUpdate(id, newUserData);
-        res.send(result);
-    } catch (error) {
-        console.log(error);
-    }
-});
+app.use(routes);
 
-app.delete('/deleteUser/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const result = await UserModel.findByIdAndRemove(id);
-        res.send(result);
-    } catch (error) {
-        console.log(error);
-    }
-});
+connectDB();
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}...`);
+});
+
+// Socket.io
+
+const io = socket(server, 
+    {
+        cors: {
+            origin: "http://127.0.0.1:5173",
+            methods: ["GET", "POST"]
+        }
+    }
+);
+
+let usersIoID = [];
+
+const addSocketUser = (userId, socketId) => {
+    !usersIoID.some(user => user.userId === userId) &&
+        usersIoID.push({userId, socketId});
+};
+
+const removeSocketUser = (socketId) => {
+    usersIoID = usersIoID.filter(user => user.socketId !== socketId);
+}
+
+const getSocketUser = (userId) => {
+    return usersIoID.find(user=>user.userId === userId);
+}
+
+io.on("connection", (socket) => {
+    //When connect
+    console.log("User connected!");
+    socket.on("addUser", (userId) => {
+        addSocketUser(userId, socket.id);
+        io.emit("getUsers", usersIoID);
+    });
+
+    //When send and get message
+    socket.on("sendMessage", ({ senderId, receiverId, text }) => {
+        const user = getSocketUser(receiverId);
+        if(!user) return;
+        io.to(user.socketId).emit("getMessage", {
+            senderId,
+            text
+        });
+    })
+
+    //when disconnect
+    socket.on("disconnect", () => {
+        console.log("User disconnected!");
+        removeSocketUser(socket.id);
+        io.emit("getUsers", usersIoID);
+    });
 });
