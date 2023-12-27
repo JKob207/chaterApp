@@ -5,6 +5,7 @@ import { userContext } from "../../components/AuthRequired/AuthRequired";
 import { ConversationType, MessagesType } from "../../types";
 import { getConversations, getMessages, postMessage } from "../../services/communicationAPI";
 import CurrentContactInfo from "../../components/CurrentContactInfo/CurrentContactInfo";
+import { Socket, io } from "socket.io-client";
 
 export default function ChatDashboard()
 {
@@ -12,8 +13,36 @@ export default function ChatDashboard()
     const [currentChat, setCurrentChat] = useState<ConversationType | null>(null);
     const [messages, setMessages] = useState<MessagesType[]>([]);
     const [newMessage, setNewMessage] = useState("");
+    const [arrivalMessage, setArrivalMessage] = useState<MessagesType | null>(null);
+    const socket = useRef<Socket>();
     const scrollRef = useRef<HTMLDivElement>(null);
     const user = useContext(userContext);
+
+    useEffect(() => {
+        socket.current = io("ws://localhost:3001");
+        socket.current.on("getMessage", data => {
+            setArrivalMessage({
+                sender: data.senderId,
+                text: data.text,
+                createdAt: Date.now()
+            });
+        });
+    }, [])
+
+    useEffect(() => {
+        arrivalMessage && currentChat?.members.includes(arrivalMessage.sender) &&
+            setMessages(prev => [...prev, arrivalMessage]);
+    }, [arrivalMessage, currentChat])
+
+    useEffect(() => {
+        if(socket.current)
+        {
+            socket?.current.emit("addUser", user?._id);
+            socket?.current.on("getUsers", users => {
+                console.log(users);
+            });
+        }
+    }, [user])
 
     useEffect(() => {
         const getConversationsFromAPI = async () => {
@@ -62,6 +91,14 @@ export default function ChatDashboard()
                 text: newMessage
             };
 
+            const receiverId = currentChat.members.find(member => member !== user._id);
+
+            socket.current?.emit("sendMessage", {
+                senderId: user._id,
+                receiverId,
+                text: newMessage
+            });
+
             const res = await postMessage(message);
             if(res)
             {
@@ -102,8 +139,8 @@ export default function ChatDashboard()
                 <div className="chat-list my-5 mx-2">
                     {
                         conversations.map((c) => (
-                            <div onClick={() => setCurrentChat(c)}>
-                                <Conversation key={c._id} conversation={c} currentUser={user ? user : null} />
+                            <div key={c._id} onClick={() => setCurrentChat(c)}>
+                                <Conversation conversation={c} currentUser={user ? user : null} />
                             </div>
                         ))
                     }
