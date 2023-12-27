@@ -8,7 +8,6 @@ type MessageProps = {
 
 export default function Message({message, own}: MessageProps)
 {
-    console.log(message);
     return (
         <div className={`message flex flex-col mt-5 ${own ? "items-end mr-4" : ""}`}>
             <div className="messageTop flex">
