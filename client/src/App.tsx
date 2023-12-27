@@ -5,6 +5,7 @@ import Register from './routes/Register/Register';
 import AuthRequired from './components/AuthRequired/AuthRequired';
 import Layout from './components/Layout/Layout';
 import ChatDashboard from './routes/ChatDashboard/ChatDashboard';
+import ContactBook from './routes/ContactBook/ContactBook';
 
 export default function App() {
   const router = createBrowserRouter(createRoutesFromElements(
@@ -14,6 +15,7 @@ export default function App() {
       <Route element={<AuthRequired />}>
         <Route path='main' element={<Layout />}>
           <Route index element={<ChatDashboard />} />
+          <Route path='contactbook' element={<ContactBook />} />
         </Route>
       </Route>
     </Route>
