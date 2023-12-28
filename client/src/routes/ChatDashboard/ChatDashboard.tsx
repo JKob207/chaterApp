@@ -14,6 +14,7 @@ export default function ChatDashboard()
     const [messages, setMessages] = useState<MessagesType[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const [arrivalMessage, setArrivalMessage] = useState<MessagesType | null>(null);
+    const [onlineUsers, setOnlineUsers] = useState<{userId: string; socketId: string;}[]>([]);
     const socket = useRef<Socket>();
     const scrollRef = useRef<HTMLDivElement>(null);
     const user = useContext(userContext);
@@ -39,7 +40,7 @@ export default function ChatDashboard()
         {
             socket?.current.emit("addUser", user?._id);
             socket?.current.on("getUsers", users => {
-                console.log(users);
+                setOnlineUsers(users);
             });
         }
     }, [user])
@@ -117,10 +118,7 @@ export default function ChatDashboard()
         <div className="flex flex-row mt-2 ml-8">
             <aside className="basis-1/5">
                 <div>
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-3xl font-bold">Chat</h2>
-                        <p className="text-gray-600">Newest</p>
-                    </div>
+                    <h2 className="text-3xl font-bold">Chat</h2>
                     <div className="mt-5">
                         <label className="relative block">
                             <svg xmlns="http://www.w3.org/2000/svg" className="pointer-events-none w-5 h-5 absolute top-1/2 transform -translate-y-1/2" x="0px" y="0px" width="32" height="32" viewBox="0 0 32 32">
@@ -139,7 +137,7 @@ export default function ChatDashboard()
                 <div className="chat-list my-5 mx-2">
                     {
                         conversations.map((c) => (
-                            <div key={c._id} onClick={() => setCurrentChat(c)}>
+                            <div key={c._id} onClick={() => setCurrentChat(c)} className="cursor-pointer">
                                 <Conversation conversation={c} currentUser={user ? user : null} isActive={currentChat?._id === c._id} />
                             </div>
                         ))
@@ -150,7 +148,7 @@ export default function ChatDashboard()
                 {
                     currentChat ?
                     <>
-                        <CurrentContactInfo conversation={currentChat} currentUser={user ? user : null} />
+                        <CurrentContactInfo conversation={currentChat} currentUser={user ? user : null} userOnlineData={onlineUsers} />
                         <div className="mt-8">
                             <div className="MessageBoxWrapper">
                                 <div className="message-box h-[66vh] overflow-y-scroll">

@@ -25,7 +25,7 @@ export default function Header({ user } : HeaderProps)
             <img className="p-4" src="https://placehold.co/50" alt="notifications" />
             <a className="p-4" href="#">My profile</a>
             <p className="p-4 cursor-pointer" onClick={logoutUser}>Sign out</p>
-            <img className="p-4 rounded-full" src="https://placehold.co/50" alt="notifications" />
+            <img className="p-2 rounded-full w-[50px] h-[50px]" src={user.avatar} alt="notifications" />
         </header>
     )
 }
