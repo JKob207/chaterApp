@@ -37,3 +37,13 @@ export const postMessage = async (message: MessagesType) => {
         return false;
     }
 }
+
+export const postConversation = async (members: {senderId: string; receiverId: string;}) => {
+    try {
+        await axios.post('http://localhost:3001/conversations', members);
+        return true;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}

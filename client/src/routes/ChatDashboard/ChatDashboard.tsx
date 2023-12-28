@@ -140,7 +140,7 @@ export default function ChatDashboard()
                     {
                         conversations.map((c) => (
                             <div key={c._id} onClick={() => setCurrentChat(c)}>
-                                <Conversation conversation={c} currentUser={user ? user : null} />
+                                <Conversation conversation={c} currentUser={user ? user : null} isActive={currentChat?._id === c._id} />
                             </div>
                         ))
                     }

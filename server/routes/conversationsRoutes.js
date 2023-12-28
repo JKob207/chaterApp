@@ -5,13 +5,22 @@ const Conversation = mongoose.model('conversations');
 //create new conversation
 router.post('/', async (req, res) => {
     try {
+        const isAlreadyConv = await Conversation.find({
+            $or: [
+                {members: [req.body.senderId, req.body.receiverId]},
+                {members: [req.body.receiverId, req.body.senderId]}
+            ]
+        });
+        if(isAlreadyConv) throw new Error("Conversation already existed!");
+
         const newConversation = new Conversation({
             members: [req.body.senderId, req.body.receiverId]
         });
+
         const savedConversation = await newConversation.save();
         res.status(200).json(savedConversation);
     } catch (error) {
-        res.status(500).json(err);
+        res.status(500).json(error);
     }
 });
 
