@@ -47,3 +47,17 @@ export const postConversation = async (members: {senderId: string; receiverId: s
         return false;
     }
 }
+
+export const checkIfTwoUsersAlreadyHaveConversation = async (senderId: string | undefined, receiverId: string | undefined) => {
+    try {
+        const res: AxiosResponse<boolean, null> = await axios.get(`http://localhost:3001/conversations/${senderId}/${receiverId}`);
+        console.log(res);
+        if(res)
+        {
+            return res.data;
+        }else throw new Error("Wrong response!");
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
