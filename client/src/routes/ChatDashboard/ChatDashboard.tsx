@@ -17,6 +17,7 @@ export default function ChatDashboard()
     const [onlineUsers, setOnlineUsers] = useState<{userId: string; socketId: string;}[]>([]);
     const socket = useRef<Socket>();
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [filtered, setFiltered] = useState('');
     const user = useContext(userContext);
 
     useEffect(() => {
@@ -128,6 +129,7 @@ export default function ChatDashboard()
                                 type="text"
                                 name="search"
                                 id="search"
+                                onChange={(e) => setFiltered(e.target.value)}
                                 placeholder="Search"
                                 className="form-input appearance-none block w-full pl-7 border-b-2 border-gray-600 focus:border-b-3 focus:outline-0 py-1.5 text-gray-900 sm:text-sm sm:leading-6"
                             />
@@ -138,7 +140,7 @@ export default function ChatDashboard()
                     {
                         conversations.map((c) => (
                             <div key={c._id} onClick={() => setCurrentChat(c)} className="cursor-pointer">
-                                <Conversation conversation={c} currentUser={user ? user : null} isActive={currentChat?._id === c._id} />
+                                <Conversation conversation={c} currentUser={user ? user : null} isActive={currentChat?._id === c._id} filtered={filtered} />
                             </div>
                         ))
                     }
