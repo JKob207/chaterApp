@@ -6,12 +6,19 @@ const Conversation = mongoose.model('conversations');
 router.post('/', async (req, res) => {
     try {
         const isAlreadyConv = await Conversation.find({
-            $or: [
-                {members: [req.body.senderId, req.body.receiverId]},
-                {members: [req.body.receiverId, req.body.senderId]}
+            '$or': [
+              {
+                'members': [
+                  req.body.senderId, req.body.receiverId
+                ]
+              }, {
+                'members': [
+                    req.body.receiverId, req.body.senderId
+                ]
+              }
             ]
         });
-        if(isAlreadyConv) throw new Error("Conversation already existed!");
+        if(isAlreadyConv.length !== 0) throw new Error("Conversation already existed!");
 
         const newConversation = new Conversation({
             members: [req.body.senderId, req.body.receiverId]
